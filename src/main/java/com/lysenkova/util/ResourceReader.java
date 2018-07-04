@@ -1,6 +1,6 @@
 package com.lysenkova.util;
 
-import com.lysenkova.exception.FileNotFoundRuntimeException;
+import com.lysenkova.exception.ResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,12 +13,11 @@ public class ResourceReader {
 
     public InputStream getResource(String path) {
         try {
-            InputStream bufferedReader = null;
             File fileName = new File(webappPath + path);
             return new BufferedInputStream(new FileInputStream(fileName));
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             LOGGER.error("Error during searching file");
-            throw new FileNotFoundRuntimeException("Error during searching file", e);
+            throw new RuntimeException("Error during searching file", e);
         }
     }
 

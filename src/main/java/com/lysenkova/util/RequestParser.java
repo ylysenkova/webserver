@@ -2,7 +2,6 @@ package com.lysenkova.util;
 
 import com.lysenkova.entity.HttpMethod;
 import com.lysenkova.entity.Request;
-import com.lysenkova.exception.BadRequestRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +22,7 @@ public class RequestParser {
             injectHeaders(request, bufferedReader);
         }catch(Exception e) {
             LOGGER.error("Error during parsing request.");
-            throw new BadRequestRuntimeException("Error during parsing request.", e);
+            throw new RuntimeException("Error during parsing request.", e);
         }
         LOGGER.debug("Parsed request {}", request);
         return request;

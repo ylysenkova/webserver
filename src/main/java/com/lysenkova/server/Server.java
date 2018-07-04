@@ -1,5 +1,6 @@
 package com.lysenkova.server;
 
+import com.lysenkova.util.MultiRequestHandler;
 import com.lysenkova.util.RequestHandler;
 import com.lysenkova.util.ResourceReader;
 import org.slf4j.Logger;
@@ -8,40 +9,44 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server {
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(10);
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     private int port;
     private ResourceReader resourceReader;
 
     public static void main(String[] args) {
+        String path = "src/main/resources/page";
+        if (args.length != 0) {
+            path = args[0];
+        }
         Server server = new Server();
         server.setPort(3000);
-        server.setWebappPath("src/main/resources/page");
+        server.setWebappPath(path);
         server.start();
     }
 
-    public void start()  {
-        try(ServerSocket serverSocket = new ServerSocket(getPort())) {
+    public void start() {
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
             while (true) {
-                try(Socket socket = serverSocket.accept();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream())) {
-                    RequestHandler requestHandler = new RequestHandler();
-                    requestHandler.setBufferedReader(bufferedReader);
-                    requestHandler.setBufferedOutputStream(outputStream);
-                    requestHandler.setResourceReader(resourceReader);
-                    requestHandler.handle();
-                }catch (IOException e) {
+                try {
+                    Socket socket = serverSocket.accept();
+                    executorService.execute(new MultiRequestHandler(socket, resourceReader));
+
+                } catch (IOException e) {
                     LOGGER.error("Error during opening/closing stream.", e);
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("Error during opening a socket", e);
+            LOGGER.error("Error during opening a server socket", e);
         }
 
     }
+
 
     public int getPort() {
         return port;

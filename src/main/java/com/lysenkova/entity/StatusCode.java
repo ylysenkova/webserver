@@ -1,22 +1,26 @@
 package com.lysenkova.entity;
 
 public enum StatusCode {
-    OK("200", "OK"), NOT_FOUND("404", "NOT_FOUND"), BAD_REQUEST("400", "BAD_REQUEST");
+    OK(200, "OK"),
+    NOT_FOUND(404, "NOT_FOUND"),
+    BAD_REQUEST(400, "BAD_REQUEST"),
+    INTERNAL_SERVER_ERROR(500, "INTERNAL_SERVER_ERROR"),
+    METHOD_NOT_SUPPORTED(415, "METHOD_NOT_SUPPORTED");
 
-    private final String code;
-    private final String name;
+    private final int code;
+    private final String message;
 
-    StatusCode(String code, String name) {
+    StatusCode(int code, String message) {
         this.code = code;
-        this.name = name;
+        this.message = message;
     }
 
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 
-    public String getName() {
-        return name;
+    public String getMessage() {
+        return message;
     }
 
 }
